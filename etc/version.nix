@@ -1,6 +1,6 @@
 {
-  name = "nixpkgs-20.09-darwin-20210528";
+  name = "nixpkgs-unstable-20210529";
   url = https://github.com/nixos/nixpkgs.git;
-  rev = "05f3800b80f159ee5ef0eccd8e31a645e6723feb";
-  ref = "nixos-20.09";
+  rev = "84aa23742f6c72501f9cc209f29c438766f5352d";
+  ref = "nixos-unstable";
 }
