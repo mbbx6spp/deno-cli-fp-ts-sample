@@ -15,6 +15,9 @@ const options = {
   },
 };
 
+const cliparse = (args: Array<string>, options: Flags.ArgParsingOptions) =>
+  Flags.parse(args, options);
+
 const log =
   (isVerbose: boolean) =>
     <A>(message: string, result: A) =>
@@ -30,6 +33,7 @@ const main = (options: Flags.Args) =>
     TE.chain((result: string) => log(options.verbose)(result, result.toUpperCase())),
   );
 
-const run = main(Flags.parse(Deno.args, options));
+const run = (args = [], stdout = console.table, stderr = console.error) =>
+  main(cliparse(args, options))().then(stdout).catch(stderr);
 
 export { run };
