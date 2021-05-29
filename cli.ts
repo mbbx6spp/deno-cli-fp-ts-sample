@@ -33,7 +33,7 @@ const main = (options: Flags.Args) =>
     TE.chain((result: string) => log(options.verbose)(result, result.toUpperCase())),
   );
 
-const run = (args = [], stdout = console.table, stderr = console.error) =>
+const run = (args: Array<string>, stdout: (s: string) => void, stderr: (s: string) => void) =>
   main(cliparse(args, options))().then(stdout).catch(stderr);
 
 export { run };
