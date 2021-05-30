@@ -41,7 +41,22 @@ In this case we didn't need to access the filesystem, network, or read from the 
 
 The =bundle= subcommand gives us the a JavaScript file with all the dependencies of the script resolved and inlined into one self-contained file. So running =deno bundle main.deno.ts deno.js= will output the self-contained JavaScript file into =deno.js=. At the time of running this locally it output a 486 line file.
 
-The =compile= subcommand on the other hand gives us a binary executable file. TODO: Discuss options further.
+The =compile= subcommand on the other hand gives us a binary executable file and we can even cross-compile using the =--target= option:
+
+#+begin_src shell
+# the following produces linux x86 64-bit binary
+deno compile --target x86_64-unknown-linux-gnu --output denomain-linux-x64 main.deno.ts
+
+# the following produces darwin x86 64-bit binary
+deno compile --target x86_64-apple-darwin --output denomain-darwin-x64 main.deno.ts
+
+# the following produces windows x86 64-bit binary
+deno compile --target x86_64-pc-windows-mxvc --output denomain-windows-x64 main.deno.ts
+
+# the following produces darwin aarch 64-bit binary
+deno compile --target aarch64-apple-darwin --output denomain-darwin-aarch64 main.deno.ts
+#+end_src
+
 
 *** =repl=
 
