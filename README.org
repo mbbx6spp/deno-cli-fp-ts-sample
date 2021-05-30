@@ -1,0 +1,74 @@
+#+TITLE: Example of a CLI skeleton for Deno using fp-ts
+
+** Purpose
+
+The purpose of this repository is to:
+- provide the basic structure necessary to build a simple CLI tool for Deno
+- introduce Deno tooling (subcommands like =bundle=, =compile=, =repl=, =run=)
+- show to make =main= shims to make the bundled JS runnable with Deno and Node.
+
+
+** Deno subcommands
+
+*** =run=
+
+To run a script on Deno, you can run =deno run file.ts=. For our sample CLI project we will run =main.deno.ts= like so:
+
+#+begin_src shell
+deno run main.deno.ts -v hello world
+#+end_src
+
+We will get output like the following:
+
+#+begin_src text
+[VERBOSE] >>> hello world
+┌───────┬───────────────┐
+│ (idx) │    Values     │
+├───────┼───────────────┤
+│ _tag  │    "Right"    │
+│ right │ "HELLO WORLD" │
+└───────┴───────────────┘
+#+end_src
+
+If we remove the =-v= flag we no longer get the extra =[VERBOSE] >>>= prefixed output of the intermediate value.
+
+In this case we didn't need to access the filesystem, network, or read from the environment, so we didn't need to allow those capabilities but if your script might need them:
+- =--allow-env= will allow the script to access any environment variables. You can optionally supply a comma separated list of environment variable it can access for more restriction, like =--allow-env=MY_ENV,USER=
+- =--allow-net= will allow script to access the script. You can optionally supply a comma separated list of domains or URLs that are allowable to safelist where on the Internet the script can access.
+- =--allow-read= / =--allow-write= allows scripts to read or write respectively to the filesystem. Again you can optionally provide a command separated list of path values to limit the script to just those paths.
+
+*** =bundle= and =compile=
+
+The =bundle= subcommand gives us the a JavaScript file with all the dependencies of the script resolved and inlined into one self-contained file. So running =deno bundle main.deno.ts deno.js= will output the self-contained JavaScript file into =deno.js=. At the time of running this locally it output a 486 line file.
+
+The =compile= subcommand on the other hand gives us a binary executable file. TODO: Discuss options further.
+
+*** =repl=
+
+To launch the REPL for Deno you just need to run =deno repl=. Here you can import modules using the =import= function provided. Since it returns the module in a =Promise= you can use =await= in versions of Deno that support top-level await. For instance, to create a REPL playground environment for =fp-ts= you can create a file, say =.repl.ts= like so:
+
+#+begin_src typescript
+const fn        = await import('https://cdn.skypack.dev/fp-ts/function');
+const TE        = await import('https://cdn.skypack.dev/fp-ts/TaskEither');
+const IO        = await import('https://cdn.skypack.dev/fp-ts/IO');
+const Console   = await import('https://cdn.skypack.dev/fp-ts/Console');
+
+export { fn, TE, IO, Console };
+#+end_src
+
+Then in the REPL shell run:
+
+#+begin_src typescript
+> const { Console, TE, fn } = await import('./.repl.ts');
+...
+#+end_src
+
+At this point you would be able to use the constants as expected, e.g.
+
+#+begin_src typescript
+> fn.pipe(TE.of(42), TE.map(n => n + 1))().then(console.log).catch(console.error);
+{ _tag: "Right", right: 43 }
+Promise { undefined }
+#+end_src
+
+To end the REPL session you can use ctrl+d or =close()= to end the session.
